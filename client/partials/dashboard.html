@@ -1,0 +1,19 @@
+<h1>Dashboard</h1>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Age</th>
+      <th>Edit</th>
+      <th>Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="friend in friends">
+      <td ng-bind="friend.name"></td>
+      <td ng-bind="friend.age"></td>
+      <td><a href="#!/friends/{{friend._id}}/edit">E</a></td>
+      <td><button ng-click="delete(friend)">X</button></td>
+    </tr>
+  </tbody>
+</table>

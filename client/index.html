@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <script src="angular/angular.min.js"></script>
+    <script src="angular-route/angular-route.min.js"></script>
+    <script>
+      var app = angular.module('app', ['ngRoute']);
+      app.config(function($routeProvider) {
+        $routeProvider
+        .when('/', {
+          templateUrl: 'partials/dashboard.html',
+          controller: 'dashboardController'
+        })
+        .when('/new', {
+          templateUrl: 'partials/new.html',
+          controller: 'newController'
+        })
+        .when('/friends/:id/edit', {
+          templateUrl: 'partials/edit.html',
+          controller: 'editController'
+        })
+      })
+      app.factory('FriendFactory', function($http) {
+        console.log('Friend Factory loaded');
+        var factory = {};
+
+        factory.index  = function(callback) {
+          $http.get('/friends').then(function(res) {
+            if (typeof callback === 'function') {
+              callback(res.data);
+            }
+          })
+        }
+        factory.show = function(id, callback) {
+          $http.get('/friends/'+id).then(function(res) {
+            if (typeof callback === 'function') {
+              callback(res.data);
+            }
+          })
+        }
+        factory.create = function(newFriend, callback) {
+          $http.post('/friends', newFriend).then(function(res) {
+            console.log(res.data);
+            if (typeof callback === 'function') {
+              callback(res.data);
+            }
+          })
+        }
+        factory.update = function(friend, callback) {
+          $http.put('/friends/'+friend._id, friend).then(function(res) {
+            if (typeof callback === 'function') {
+              callback(res.data);
+            }
+          })
+        }
+        factory.delete = function(friend, callback) {
+          $http.delete('/friends/'+friend._id).then(function(res) {
+            console.log(res.data);
+            if (typeof callback === 'function') {
+              callback(res.data);
+            }
+          })
+        }
+
+        return factory;
+      })
+      app.controller('dashboardController', function($scope, FriendFactory) {
+        console.log('Dashboard Controller Loaded');
+        FriendFactory.index(function(data) {
+          $scope.friends = data;
+        })
+
+        $scope.delete = function(friend) {
+          FriendFactory.delete(friend, function(data) {
+            FriendFactory.index(function(data) {
+              $scope.friends = data;
+            });
+          });
+        }
+      })
+      app.controller('newController', function($scope, FriendFactory, $location) {
+        console.log('New Controller Loaded');
+        $scope.errors = {};
+
+        $scope.create = function() {
+          $scope.errors = {};
+          FriendFactory.create($scope.newFriend, function(data) {
+            if (data.errors) {
+              console.log(data.errors);
+              $scope.errors = data.errors;
+            } else {
+              $scope.newFriend = {};
+              $location.url('/');
+            }
+          })
+        }
+      })
+      app.controller('editController', function($scope, FriendFactory, $location, $routeParams) {
+        console.log('Edit Controller Loaded');
+        FriendFactory.show($routeParams.id, function(data) {
+          $scope.friend = data;
+        })
+
+        $scope.update = function() {
+          console.log($scope.friend);
+          FriendFactory.update( $scope.friend, function(data) {
+            $location.url('/');
+          })
+        }
+      })
+    </script>
+  </head>
+  <body ng-app="app">
+    <a href="/">Home</a>
+    <a href="#!/new">New</a>
+    <div ng-view=""></div>
+  </body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "0217FullMean",
+  "description": "",
+  "main": "server.js",
+  "authors": [
+    "Howard Jiang <me@howardjiang.com> (http://howardjiang.com)"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.6.2",
+    "angular-route": "^1.6.2"
+  }
+}
